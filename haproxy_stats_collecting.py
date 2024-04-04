@@ -94,7 +94,7 @@ if __name__ == "__main__":
         if data:
             parsed_data = parse_data(data)  # парсинг данных
             write_to_excel(parsed_data)  # запись в таблицу
-            print("Данные записаны ...")
+            print(f"Данные записаны ... {datetime.now().strftime('%H:%M:%S')}")
         time.sleep(sleep_time)
 
     print(" - - - Сбор данных завершён - - - ")
