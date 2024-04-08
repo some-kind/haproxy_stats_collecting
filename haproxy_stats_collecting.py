@@ -23,6 +23,23 @@ def fetch_data(url):
     return None
 
 
+servers_strings = [   # список доп серверов, которые мониторить
+    "back::Thin_Client_Users:88,nn-sed-web1.nnov.ru",
+    "back::Thin_Client_Users:88,nn-sed-web2.nnov.ru",
+    "back::Thin_Client_Users:88,nn-sed-web3.nnov.ru",
+    "back::Thin_Client_Users:88,nn-sed-web4.nnov.ru",
+    "back::Thin_Client_Users:88,nn-sed-web5.nnov.ru",
+    "back::Thin_Client_Users:88,nn-sed-web7.nnov.ru",
+    "back::Thin_Client_Users:88,nn-sed-web8.nnov.ru",
+    "back::Thin_Client_Users:88,nn-sed-web9.nnov.ru",
+    "back::Thin_Client_Users:88,nn-sed-web12.nnov.ru",
+    "back::Thin_Client_Users:88,nn-sed-web13.nnov.ru",
+    "back::Thin_Client_Users:88,nn-sed-web14.nnov.ru",
+    "back::Thin_Client_Users:88,nn-sed-web16.nnov.ru"
+
+]
+
+
 def parse_data(data):
     """
     Парсинг данных haproxy
@@ -30,22 +47,30 @@ def parse_data(data):
     :return: список данных парами
     """
     parsed_data = []
+    row_data = []  # небольшой костыль (т.к. нужен список списка)
     lines = data.split('\n')  # сплитим на строки
     for line in lines:
         if line.startswith("front::Thin_Client:88"):  # ориентир интересующих нас данных (фронтент ТК)
             parts = line.split(',')  # сплитим по запятым на элементы
-            if len(parts) >= 34 and len(parts) >= 17:  # доп. проверка, чтобы не прочитать корявую строку
-                servers = 8  # количество серверов
-                parsed_data.append([int(parts[33]),
-                                    int(parts[-17]),
-                                    round(int(parts[33])/servers, 2),
-                                    round(int(parts[-17])/servers, 2)])  # сохраняем результаты
+            if len(parts) >= 34:  # доп. проверка, чтобы не прочитать корявую строку
+                row_data.append(parts[4])  # сохраняем результаты
+                row_data.append(parts[-17])
                 # rate (33 элемент) - количество сессий в секунду
+                # scur (4 элемент) - количество сессий текущих
                 # req_rate (-17 элемент) - количество запросов в секунду
-                # делим на кол-во серверов, потому что собираем данные общие по балансеру,
-                # а нам нужно среднее кол-во на сервере
             else:
                 print("Ошибка: Неправлиьный формат данных (строка не соответствует затребованным данных).")
+        for server in servers_strings:  # бежим по серверам из списка servers_strings
+            if line.startswith(server):
+                parts = line.split(',')  # сплитим по запятым на элементы
+                if len(parts) >= 34:  # доп. проверка, чтобы не прочитать корявую строку
+                    row_data.append(parts[4])  # сохраняем результаты
+                    #
+                    # scur (4 элемент) - количество сессий текущих
+                    #
+                else:
+                    print("Ошибка: Неправлиьный формат данных (строка не соответствует затребованным данных).")
+    parsed_data.append(row_data)
     return parsed_data
 
 
@@ -61,8 +86,16 @@ def write_to_excel(data):
     except FileNotFoundError:   # если её ещё нет - создаём
         wb = Workbook()
         ws = wb.active
-        # Заголовки столбцов
-        ws.append(['Time', 'Sessions/sec', 'Requests/sec', 'Sessions/sec 1 server', 'Requests/sec 1 server'])
+        # Заголовки столбцов стандартные для общего фронтента балансера
+        headers = ['Time',
+                   # 'balance Ses/sec',
+                   'balancer_Ses',
+                   'balancer_Req/sec']
+
+        # Заголовки для каждого сервера
+        for server in servers_strings:
+            headers.append(f"{server.split(',')[-1]}_Ses")
+        ws.append(headers)
 
     for row in data:
         row.insert(0, datetime.now().strftime("%H:%M:%S"))  # Вставка времени в начало каждой строки
