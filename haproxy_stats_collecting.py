@@ -53,7 +53,7 @@ def parse_data(data):
         if line.startswith("front::Thin_Client:88"):  # ориентир интересующих нас данных (фронтент ТК)
             parts = line.split(',')  # сплитим по запятым на элементы
             if len(parts) >= 34:  # доп. проверка, чтобы не прочитать корявую строку
-                row_data.append(int(parts[4]))  # сохраняем результаты
+                # row_data.append(int(parts[4]))  # сохраняем результаты
                 row_data.append(int(parts[-17]))
                 # rate (33 элемент) - количество сессий в секунду
                 # scur (4 элемент) - количество сессий текущих
@@ -89,7 +89,7 @@ def write_to_excel(data):
         # Заголовки столбцов стандартные для общего фронтента балансера
         headers = ['Time',
                    # 'balance Ses/sec',
-                   'balancer_Ses',
+                   # 'balancer_Ses',
                    'balancer_Req/sec']
 
         # Заголовки для каждого сервера
