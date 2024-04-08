@@ -53,8 +53,8 @@ def parse_data(data):
         if line.startswith("front::Thin_Client:88"):  # ориентир интересующих нас данных (фронтент ТК)
             parts = line.split(',')  # сплитим по запятым на элементы
             if len(parts) >= 34:  # доп. проверка, чтобы не прочитать корявую строку
-                row_data.append(parts[4])  # сохраняем результаты
-                row_data.append(parts[-17])
+                row_data.append(int(parts[4]))  # сохраняем результаты
+                row_data.append(int(parts[-17]))
                 # rate (33 элемент) - количество сессий в секунду
                 # scur (4 элемент) - количество сессий текущих
                 # req_rate (-17 элемент) - количество запросов в секунду
@@ -64,7 +64,7 @@ def parse_data(data):
             if line.startswith(server):
                 parts = line.split(',')  # сплитим по запятым на элементы
                 if len(parts) >= 34:  # доп. проверка, чтобы не прочитать корявую строку
-                    row_data.append(parts[4])  # сохраняем результаты
+                    row_data.append(int(parts[4]))  # сохраняем результаты
                     #
                     # scur (4 элемент) - количество сессий текущих
                     #
