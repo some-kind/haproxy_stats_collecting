@@ -35,7 +35,8 @@ servers_strings = [   # список доп серверов, которые м�
     "back::Thin_Client_Users:88,nn-sed-web12.nnov.ru",
     "back::Thin_Client_Users:88,nn-sed-web13.nnov.ru",
     "back::Thin_Client_Users:88,nn-sed-web14.nnov.ru",
-    "back::Thin_Client_Users:88,nn-sed-web16.nnov.ru"
+    "back::Thin_Client_Users:88,nn-sed-web16.nnov.ru",
+    "back::Thin_Client_Users:88,BACKEND"
 
 ]
 
